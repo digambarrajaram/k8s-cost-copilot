@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.Python
+env/
+venv/
+.env
+*.env.local
+*.env.*.local
+
+# Virtual Environment
+venv/
+env/
+.venv/
+virtualenv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Docker
+.docker/
+
+# Logs
+*.log
+/logs/
+
+# OS
+Thumbs.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Windows Python venv at project root
+AI_Shopping_Assistant/
+
+.claude/
