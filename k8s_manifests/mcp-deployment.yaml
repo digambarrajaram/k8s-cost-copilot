@@ -16,7 +16,7 @@ spec:
       serviceAccountName: mcp-server-sa
       containers:
         - name: mcp-server
-          image: containers/kubernetes-mcp-server:latest
+          image: docker.io/mcp/kubernetes:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
