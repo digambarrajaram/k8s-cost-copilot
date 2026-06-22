@@ -18,6 +18,7 @@ spec:
         - name: mcp-server
           image: docker.io/mcp/kubernetes:latest
           imagePullPolicy: Always
+          args: ["sse"] 
           ports:
             - containerPort: 3000
           env:
