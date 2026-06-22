@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mcp-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-db
+  namespace: mcp-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:5.0
+          ports:
+            - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+  namespace: mcp-test
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  selector:
+    app: mongo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook-frontend
+  namespace: mcp-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: guestbook
+  template:
+    metadata:
+      labels:
+        app: guestbook
+    spec:
+      containers:
+        - name: frontend
+          image: cloudacademy/voteapp-frontend:v1
+          ports:
+            - containerPort: 80
+          env:
+            - name: MONGO_URL
+              value: "mongodb://mongo-service:27017/guestbook"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook-service
+  namespace: mcp-test
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30088
+  selector:
+    app: guestbook
