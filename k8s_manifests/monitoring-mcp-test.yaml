@@ -63,7 +63,13 @@ data:
       - job_name: 'prometheus'
         static_configs:
           - targets: ['localhost:9090']
-
+      - job_name: 'kube-state-metrics'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name]
+            action: keep
+            regex: kube-system;kube-state-metrics
 ---
 apiVersion: v1
 kind: ServiceAccount
