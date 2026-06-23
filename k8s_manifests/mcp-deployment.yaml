@@ -30,6 +30,11 @@ kind: Service
 metadata:
   name: mcp-server-service
   namespace: default
+  # Prometheus annotations allow the cross-namespace scraping engine to discover this endpoint
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3000"
+    prometheus.io/path: "/metrics"
 spec:
   type: NodePort
   selector:

@@ -50,3 +50,5 @@ frontend/.vite/
 AI_Shopping_Assistant/
 
 .claude/
+
+k8s_key.pem
