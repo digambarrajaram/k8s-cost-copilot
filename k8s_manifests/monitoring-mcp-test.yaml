@@ -15,7 +15,11 @@ data:
     scrape_configs:
       - job_name: 'kubernetes-apiservers'
         kubernetes_sd_configs:
-          - role: apiserver
+          - role: endpoints # <-- Changed from 'apiserver' to 'endpoints'
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: default;kubernetes;https
       - job_name: 'kubernetes-nodes'
         kubernetes_sd_configs:
           - role: node
@@ -23,7 +27,6 @@ data:
         static_configs:
           - targets: ['host.minikube.internal:8080']
       
-      # ADD THIS BLOCK FOR POD AUTO-DISCOVERY ACROSS ALL NAMESPACES
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
           - role: pod

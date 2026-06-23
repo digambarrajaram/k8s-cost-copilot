@@ -371,7 +371,7 @@ async def build_and_run_graph():
                     "messages": [
                         HumanMessage(content=(
                             f"Check the {TARGET_NAMESPACE} namespace. "
-                            "create mongo db service"
+                            "check and resolve the issue in prometheus-deployment-6b9447c6d7-hdm4x"
                         ))
                     ],
                     "risk_level": None,
