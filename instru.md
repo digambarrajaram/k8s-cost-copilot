@@ -31,3 +31,28 @@ ubuntu@ip-172-31-82-237:~$ history
    84  npx -y kubernetes-mcp-server@latest --port 8080 --kubeconfig /home/ubuntu/.kube/config
 
     nohup npx -y kubernetes-mcp-server@latest --port 8080 --kubeconfig /home/ubuntu/.kube/config > mcp.log 2>&1 &
+
+
+# 1. Start the Prometheus service tunnel in the background
+nohup minikube service prometheus-service -n mcp-test > prometheus-tunnel.log 2>&1 &
+
+# 2. Start the Grafana service tunnel in the background
+nohup minikube service grafana-service -n mcp-test > grafana-tunnel.log 2>&1 &
+
+
+# Check the Prometheus URL
+cat prometheus-tunnel.log
+
+# Check the Grafana URL
+cat grafana-tunnel.log
+
+
+# 1. Force forward Prometheus to all interfaces
+nohup kubectl port-forward --address 0.0.0.0 svc/prometheus-service 9090:9090 -n mcp-test > prom-pf.log 2>&1 &
+
+# 2. Force forward Grafana to all interfaces
+nohup kubectl port-forward --address 0.0.0.0 svc/grafana-service 3000:3000 -n mcp-test > grafana-pf.log 2>&1 &
+
+
+minikube addons enable metrics-server
+
