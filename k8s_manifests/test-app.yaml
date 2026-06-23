@@ -19,20 +19,39 @@ spec:
         app: mongo
     spec:
       containers:
+        # Core database container
         - name: mongo
           image: mongo:5.0
           ports:
             - containerPort: 27017
+        
+        # Prometheus Exporter Sidecar (Translates MongoDB internal state to /metrics)
+        - name: mongodb-exporter
+          image: bitnami/mongodb-exporter:0.40.0
+          ports:
+            - containerPort: 9216
+          env:
+            - name: MONGODB_URI
+              value: "mongodb://localhost:27017"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mongo-service
   namespace: mcp-test
+  # Tells Prometheus to scrape the database exporter port instead of the raw DB port
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9216"
+    prometheus.io/path: "/metrics"
 spec:
   ports:
-    - port: 27017
+    - name: mongo
+      port: 27017
       targetPort: 27017
+    - name: metrics
+      port: 9216
+      targetPort: 9216
   selector:
     app: mongo
 ---
@@ -65,6 +84,11 @@ kind: Service
 metadata:
   name: guestbook-service
   namespace: mcp-test
+  # Tells Prometheus to scrape your web application framework endpoint
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+    prometheus.io/path: "/metrics"
 spec:
   type: NodePort
   ports:
