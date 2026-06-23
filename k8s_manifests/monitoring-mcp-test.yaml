@@ -110,10 +110,15 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/prometheus/
+            - name: storage-volume          # <-- Add this mount
+              mountPath: /prometheus/
       volumes:
         - name: config-volume
           configMap:
             name: prometheus-server-conf
+        - name: storage-volume          # <-- Add this volume block
+          emptyDir: {}
+
 ---
 apiVersion: v1
 kind: Service
