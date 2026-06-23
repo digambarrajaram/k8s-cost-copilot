@@ -19,6 +19,9 @@ data:
       - job_name: 'kubernetes-nodes'
         kubernetes_sd_configs:
           - role: node
+      - job_name: 'local-mcp-server'
+        static_configs:
+          - targets: ['host.minikube.internal:8080']
       
       # ADD THIS BLOCK FOR POD AUTO-DISCOVERY ACROSS ALL NAMESPACES
       - job_name: 'kubernetes-pods'
