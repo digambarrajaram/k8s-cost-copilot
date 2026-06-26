@@ -1846,11 +1846,11 @@
             "sort": "desc"
           }
         },
-        "title": "Pod Phase Changes (5m rate)",
+        "title": "Pod Count by Phase",
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(phase) (increase((kube_pod_status_phase * on(pod,namespace) group_left() kube_pod_info)[5m]))",
+            "expr": "count by(phase) (kube_pod_status_phase == 1)",
             "legendFormat": "{{phase}}",
             "refId": "A"
           }
