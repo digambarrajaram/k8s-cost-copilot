@@ -96,11 +96,11 @@ CHECKS = [
      "get namespaces --no-headers | wc -l"),
 
     ("Running pods",
-     "count(kube_pod_status_phase{phase=\"Running\"})",
+     "count(kube_pod_status_phase{phase=\"Running\"} == 1)",
      "get pods --all-namespaces --field-selector=status.phase=Running --no-headers | wc -l"),
 
     ("Non-running pods",
-     "count(kube_pod_status_phase{phase!=\"Running\",phase!=\"Succeeded\"})",
+     "count(kube_pod_info) - count(kube_pod_status_phase{phase=\"Running\"} == 1)",
      "get pods --all-namespaces --field-selector=status.phase!=Running --no-headers | grep -v Completed | wc -l"),
 
     # ── Deployments ready ──
