@@ -56,3 +56,30 @@ nohup kubectl port-forward --address 0.0.0.0 svc/grafana-service 3000:3000 -n mc
 
 minikube addons enable metrics-server
 
+
+
+
+
+
+
+# ── 1. Start Minikube ──
+minikube start
+
+# ── 2. Wait for cluster to be ready ──
+kubectl wait --for=condition=Ready node/minikube --timeout=120s
+
+nohup npx -y kubernetes-mcp-server@latest --port 8080 --kubeconfig /home/ubuntu/.kube/config > mcp.log 2>&1 &
+
+
+# ── 3. Start port-forwards (background) ──
+pkill -f "port-forward" 2>/dev/null
+sleep 2
+
+nohup kubectl port-forward --address 0.0.0.0 svc/prometheus-service 9090:9090 -n mcp-test > ~/prom-pf.log 2>&1 &
+nohup kubectl port-forward --address 0.0.0.0 svc/grafana-service 3000:3000 -n mcp-test > ~/grafana-pf.log 2>&1 &
+
+# ── 4. Verify everything is up ──
+sleep 5
+kubectl get pods -n mcp-test
+curl -s http://localhost:9090/-/healthy && echo "✅ Prometheus OK"
+curl -s http://localhost:3000/api/health | python3 -c "import json,sys; d=json.load(sys.stdin); print('✅ Grafana OK' if d.get('database')=='ok' else '❌ Grafana issue')"
