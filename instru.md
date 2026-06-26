@@ -83,3 +83,10 @@ sleep 5
 kubectl get pods -n mcp-test
 curl -s http://localhost:9090/-/healthy && echo "✅ Prometheus OK"
 curl -s http://localhost:3000/api/health | python3 -c "import json,sys; d=json.load(sys.stdin); print('✅ Grafana OK' if d.get('database')=='ok' else '❌ Grafana issue')"
+
+
+
+
+curl -X POST "http://admin:admin@52.70.236.20:3000/api/dashboards/db" \
+  -H "Content-Type: application/json" \
+  -d @grafana-dashboards/k8s-ec2-cluster-monitor.json
