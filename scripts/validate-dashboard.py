@@ -86,7 +86,7 @@ def kubectl(cmd: str) -> str:
 
 def kubectl_json(cmd: str) -> Any:
     """Run kubectl -o json and parse."""
-    raw = kubectl(f"{cmd} -o json 2>/dev/null")
+    raw = kubectl(f"{cmd} -o json")
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
@@ -99,7 +99,7 @@ def kubectl_json(cmd: str) -> Any:
 
 def k8s_count(cmd: str) -> int:
     """Return count of lines from a kubectl get command."""
-    raw = kubectl(f"{cmd} --no-headers 2>/dev/null")
+    raw = kubectl(f"{cmd} --no-headers")
     if raw.startswith("ERROR") or not raw:
         return 0
     return len(raw.strip().split("\n"))
