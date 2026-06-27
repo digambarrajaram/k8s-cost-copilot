@@ -176,7 +176,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "count(kube_pod_info) - count(kube_pod_status_phase{phase=\"Running\"} == 1)",
+            "expr": "count(kube_pod_info{namespace=~\"$namespace\"}) - count(kube_pod_status_phase{namespace=~\"$namespace\", phase=\"Running\"} == 1)",
             "refId": "A"
           }
         ]
@@ -226,7 +226,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "count(kube_pod_status_phase{phase=\"Running\"} == 1)",
+            "expr": "count(kube_pod_status_phase{namespace=~\"$namespace\", phase=\"Running\"} == 1)",
             "refId": "A"
           }
         ]
@@ -276,7 +276,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "sum(kube_pod_container_status_restarts_total)",
+            "expr": "sum(kube_pod_container_status_restarts_total{namespace=~\"$namespace\"})",
             "refId": "A"
           }
         ]
@@ -713,7 +713,7 @@
         "type": "table",
         "targets": [
           {
-            "expr": "kube_deployment_status_replicas_available",
+            "expr": "kube_deployment_status_replicas_available{namespace=~\"$namespace\"}",
             "instant": true,
             "format": "table",
             "refId": "A"
@@ -813,7 +813,7 @@
         "type": "table",
         "targets": [
           {
-            "expr": "kube_daemonset_status_number_ready",
+            "expr": "kube_daemonset_status_number_ready{namespace=~\"$namespace\"}",
             "instant": true,
             "format": "table",
             "refId": "A"
@@ -919,7 +919,7 @@
         "type": "table",
         "targets": [
           {
-            "expr": "kube_pod_container_status_restarts_total",
+            "expr": "kube_pod_container_status_restarts_total{namespace=~\"$namespace\"}",
             "instant": true,
             "format": "table",
             "refId": "A"
@@ -987,7 +987,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "increase(kube_pod_container_status_restarts_total[5m])",
+            "expr": "increase(kube_pod_container_status_restarts_total{namespace=~\"$namespace\"}[5m])",
             "legendFormat": "{{namespace}}/{{pod}}",
             "refId": "A"
           }
@@ -1049,7 +1049,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(namespace) (rate(container_cpu_usage_seconds_total[2m]))",
+            "expr": "sum by(namespace) (rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\"}[2m]))",
             "legendFormat": "{{namespace}}",
             "refId": "A"
           }
@@ -1099,7 +1099,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(namespace) (container_memory_working_set_bytes)",
+            "expr": "sum by(namespace) (container_memory_working_set_bytes{namespace=~\"$namespace\"})",
             "legendFormat": "{{namespace}}",
             "refId": "A"
           }
@@ -1147,12 +1147,12 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(namespace) (kube_pod_container_resource_requests{resource=\"cpu\"})",
+            "expr": "sum by(namespace) (kube_pod_container_resource_requests{namespace=~\"$namespace\", resource=\"cpu\"})",
             "legendFormat": "Req \u2014 {{namespace}}",
             "refId": "A"
           },
           {
-            "expr": "sum by(namespace) (kube_pod_container_resource_limits{resource=\"cpu\"})",
+            "expr": "sum by(namespace) (kube_pod_container_resource_limits{namespace=~\"$namespace\", resource=\"cpu\"})",
             "legendFormat": "Lim \u2014 {{namespace}}",
             "refId": "B"
           }
@@ -1200,12 +1200,12 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(namespace) (kube_pod_container_resource_requests{resource=\"memory\"})",
+            "expr": "sum by(namespace) (kube_pod_container_resource_requests{namespace=~\"$namespace\", resource=\"memory\"})",
             "legendFormat": "Req \u2014 {{namespace}}",
             "refId": "A"
           },
           {
-            "expr": "sum by(namespace) (kube_pod_container_resource_limits{resource=\"memory\"})",
+            "expr": "sum by(namespace) (kube_pod_container_resource_limits{namespace=~\"$namespace\", resource=\"memory\"})",
             "legendFormat": "Lim \u2014 {{namespace}}",
             "refId": "B"
           }
@@ -1255,7 +1255,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "topk(10, container_memory_working_set_bytes)",
+            "expr": "topk(10, container_memory_working_set_bytes{namespace=~\"$namespace\"})",
             "legendFormat": "{{namespace}}/{{pod}}/{{container}}",
             "refId": "A"
           }
@@ -1317,7 +1317,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(namespace) (rate(container_network_receive_bytes_total[2m]))",
+            "expr": "sum by(namespace) (rate(container_network_receive_bytes_total{namespace=~\"$namespace\"}[2m]))",
             "legendFormat": "{{namespace}}",
             "refId": "A"
           }
@@ -1367,7 +1367,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(namespace) (rate(container_network_transmit_bytes_total[2m]))",
+            "expr": "sum by(namespace) (rate(container_network_transmit_bytes_total{namespace=~\"$namespace\"}[2m]))",
             "legendFormat": "{{namespace}}",
             "refId": "A"
           }
@@ -1416,12 +1416,12 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "sum by(namespace) (rate(container_network_receive_errors_total[2m]))",
+            "expr": "sum by(namespace) (rate(container_network_receive_errors_total{namespace=~\"$namespace\"}[2m]))",
             "legendFormat": "Errors \u2014 {{namespace}}",
             "refId": "A"
           },
           {
-            "expr": "sum by(namespace) (rate(container_network_receive_packets_dropped_total[2m]))",
+            "expr": "sum by(namespace) (rate(container_network_receive_packets_dropped_total{namespace=~\"$namespace\"}[2m]))",
             "legendFormat": "Drops \u2014 {{namespace}}",
             "refId": "B"
           }
@@ -1543,7 +1543,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "kube_deployment_status_replicas_ready{deployment=\"kube-state-metrics\"}",
+            "expr": "kube_deployment_status_replicas_ready{namespace=~\"$namespace\", deployment=\"kube-state-metrics\"}",
             "refId": "A"
           }
         ]
@@ -1593,7 +1593,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "kube_daemonset_status_number_ready{daemonset=\"node-exporter\"}",
+            "expr": "kube_daemonset_status_number_ready{namespace=~\"$namespace\", daemonset=\"node-exporter\"}",
             "refId": "A"
           }
         ]
@@ -1643,7 +1643,7 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "kube_deployment_status_replicas_ready{deployment=\"prometheus-deployment\"}",
+            "expr": "kube_deployment_status_replicas_ready{namespace=~\"$namespace\", deployment=\"prometheus-deployment\"}",
             "refId": "A"
           }
         ]
@@ -1850,7 +1850,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "count by(phase) (kube_pod_status_phase == 1)",
+            "expr": "count by(phase) (kube_pod_status_phase{namespace=~\"$namespace\"} == 1)",
             "legendFormat": "{{phase}}",
             "refId": "A"
           }
@@ -1899,7 +1899,7 @@
         "type": "timeseries",
         "targets": [
           {
-            "expr": "rate(container_oom_events_total[5m])",
+            "expr": "rate(container_oom_events_total{namespace=~\"$namespace\"}[5m])",
             "legendFormat": "{{namespace}}/{{pod}}",
             "refId": "A"
           }
