@@ -17,9 +17,12 @@ import subprocess
 import json
 import sys
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from typing import Any
 
 PROMETHEUS_URL = os.environ.get("PROMETHEUS_URL", "http://52.70.236.20:9090")
+GRAFANA_UID = os.environ.get("GRAFANA_PROMETHEUS_UID", "")
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 

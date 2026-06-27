@@ -33,13 +33,6 @@ ubuntu@ip-172-31-82-237:~$ history
     nohup npx -y kubernetes-mcp-server@latest --port 8080 --kubeconfig /home/ubuntu/.kube/config > mcp.log 2>&1 &
 
 
-# 1. Start the Prometheus service tunnel in the background
-nohup minikube service prometheus-service -n mcp-test > prometheus-tunnel.log 2>&1 &
-
-# 2. Start the Grafana service tunnel in the background
-nohup minikube service grafana-service -n mcp-test > grafana-tunnel.log 2>&1 &
-
-
 # Check the Prometheus URL
 cat prometheus-tunnel.log
 
@@ -90,3 +83,19 @@ curl -s http://localhost:3000/api/health | python3 -c "import json,sys; d=json.l
 curl -X POST "http://admin:admin@52.70.236.20:3000/api/dashboards/db" \
   -H "Content-Type: application/json" \
   -d @grafana-dashboards/k8s-ec2-cluster-monitor.json
+
+
+
+
+curl -s "http://admin:admin@35.173.177.252:3000/api/datasources" | python3 -c "
+import sys,json
+for ds in json.load(sys.stdin):
+    print(f'{ds[\"name\"]:20s}  uid={ds[\"uid\"]}  type={ds[\"type\"]}  url={ds.get(\"url\",\"\")}')"
+
+
+
+source .env && sed "s/\${DS_PROMETHEUS}/${GRAFANA_PROMETHEUS_UID}/g" \
+  grafana-dashboards/k8s-ec2-cluster-monitor.json | \
+  curl -X POST "http://admin:admin@52.70.236.20:3000/api/dashboards/db" \
+  -H "Content-Type: application/json" -d @-
+
