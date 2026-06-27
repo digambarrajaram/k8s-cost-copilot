@@ -372,11 +372,16 @@ def main() -> None:
             'sum(rate(kubelet_runtime_operations_total[5m]))'))
         filtered_ops = prom_value(prometheus_query(
             f'sum(rate(kubelet_runtime_operations_total{{node="{test_node}"}}[5m]))'))
-        works = global_ops != filtered_ops
-        if not works:
+        if filtered_ops in ("no data", "error"):
             failures += 1
-        print(f"    Kubelet ops:    global={global_ops}, node={test_node}={filtered_ops} "
-              f"{'✓ filter works' if works else '⚠ same'}")
+            print(f"    Kubelet ops:    global={global_ops}, node={test_node}=✗ {filtered_ops} "
+                  f"— metric may not carry 'node' label, try 'instance' instead")
+        else:
+            works = global_ops != filtered_ops
+            if not works:
+                failures += 1
+            print(f"    Kubelet ops:    global={global_ops}, node={test_node}={filtered_ops} "
+                  f"{'✓ filter works' if works else '⚠ same'}")
 
     # Dashboard variable health check
     print(f"\n  Dashboard variable status:")
