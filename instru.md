@@ -93,10 +93,9 @@ for ds in json.load(sys.stdin):
     print(f'{ds[\"name\"]:20s}  uid={ds[\"uid\"]}  type={ds[\"type\"]}  url={ds.get(\"url\",\"\")}')"
 
 
-
 source .env && sed "s/\${DS_PROMETHEUS}/${GRAFANA_PROMETHEUS_UID}/g" \
   grafana-dashboards/k8s-ec2-cluster-monitor.json | \
-  curl -X POST "http://admin:admin@52.70.236.20:3000/api/dashboards/db" \
+  curl -X POST "http://admin:admin@35.173.177.252:3000/api/dashboards/db" \
   -H "Content-Type: application/json" -d @-
 
 
