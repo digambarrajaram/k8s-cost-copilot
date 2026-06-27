@@ -2013,7 +2013,7 @@
           "current": {},
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "c32efcb8-7773-4a27-b2b9-9accf617d9a4"
           },
           "definition": "label_values(kube_pod_info, namespace)",
           "hide": 0,
@@ -2035,7 +2035,7 @@
           "current": {},
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "c32efcb8-7773-4a27-b2b9-9accf617d9a4"
           },
           "definition": "label_values(kube_pod_info{namespace=~\"$namespace\"}, pod)",
           "hide": 0,
@@ -2057,7 +2057,7 @@
           "current": {},
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "c32efcb8-7773-4a27-b2b9-9accf617d9a4"
           },
           "definition": "label_values(kube_node_info, node)",
           "hide": 0,
