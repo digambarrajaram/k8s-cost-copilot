@@ -7,10 +7,11 @@ Usage:
 
 Requires:
   - kubectl access to the cluster
-  - Prometheus API reachable (default: http://52.70.236.20:9090)
-  - requests library (pip install requests)
+  - Prometheus API reachable (reads PROMETHEUS_URL from .env)
+  - python-dotenv (pip install python-dotenv)
 
 Prints a side-by-side comparison of every dashboard metric vs kubectl ground truth.
+All connection settings are read from .env — no hardcoded IPs.
 """
 
 import subprocess
@@ -21,7 +22,10 @@ from dotenv import load_dotenv
 load_dotenv()
 from typing import Any
 
-PROMETHEUS_URL = os.environ.get("PROMETHEUS_URL", "http://52.70.236.20:9090")
+# All connection settings from .env — single source of truth
+CLUSTER_IP = os.environ.get("CLUSTER_IP", "localhost")
+PROMETHEUS_URL = os.environ.get("PROMETHEUS_URL", f"http://{CLUSTER_IP}:9090")
+GRAFANA_URL = os.environ.get("GRAFANA_URL", f"http://{CLUSTER_IP}:3000")
 GRAFANA_UID = os.environ.get("GRAFANA_PROMETHEUS_UID", "")
 
 # ── Helpers ────────────────────────────────────────────────────────────────────

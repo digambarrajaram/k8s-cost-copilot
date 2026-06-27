@@ -99,3 +99,5 @@ source .env && sed "s/\${DS_PROMETHEUS}/${GRAFANA_PROMETHEUS_UID}/g" \
   curl -X POST "http://admin:admin@52.70.236.20:3000/api/dashboards/db" \
   -H "Content-Type: application/json" -d @-
 
+
+python3 scripts/validate-dashboard.py
