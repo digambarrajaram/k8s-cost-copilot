@@ -93,6 +93,8 @@ def kubectl_json(cmd: str) -> Any:
         return raw
 
 
+
+
 # ── Pure-Python kubectl queries (no shell, no pipes) ───────────────────────────
 
 def k8s_count(cmd: str) -> int:
