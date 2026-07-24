@@ -80,13 +80,7 @@ curl -s http://localhost:3000/api/health | python3 -c "import json,sys; d=json.l
 
 
 
-curl -X POST "http://admin:admin@52.70.236.20:3000/api/dashboards/db" \
-  -H "Content-Type: application/json" \
-  -d @grafana-dashboards/k8s-ec2-cluster-monitor.json
-
-
-
-
+#UID 
 curl -s "http://admin:admin@35.173.177.252:3000/api/datasources" | python3 -c "
 import sys,json
 for ds in json.load(sys.stdin):
@@ -100,3 +94,34 @@ source .env && sed "s/\${DS_PROMETHEUS}/${GRAFANA_PROMETHEUS_UID}/g" \
 
 
 python3 scripts/validate-dashboard.py
+
+
+
+
+ ps -ef | grep -i grafana
+ubuntu      8509       1  0 03:39 pts/1    00:00:02 /snap/kubectl/3816/kubectl port-forward --address 0.0.0.0 svc/grafana-service 3000:3000 -n mcp-test
+472        27032   27008  9 04:56 ?        00:00:03 grafana server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini --packaging=docker cfg:default.log.mode=console cfg:default.paths.data=/var/lib/grafana cfg:default.paths.logs=/var/log/grafana cfg:default.paths.plugins=/var/lib/grafana/plugins cfg:default.paths.provisioning=/etc/grafana/provisioning
+ubuntu     27207   26698  0 04:57 pts/3    00:00:00 grep --color=auto -i grafana
+ubuntu@ip-172-31-82-237:~/k8s-cost-copilot$ kill -9 8509
+ubuntu@ip-172-31-82-237:~/k8s-cost-copilot$ sudo docker ps | grep grafana
+ubuntu@ip-172-31-82-237:~/k8s-cost-copilot$ kubectl get pods -n mcp-test | grep -i grafana
+grafana-deployment-867d4b5676-k4x8h      1/1     Running            3 (2m28s ago)   4d1h
+ubuntu@ip-172-31-82-237:~/k8s-cost-copilot$ nohup kubectl port-forward --address 0.0.0.0 svc/grafana-service 3000:3000 -n mcp-test > grafana-pf.log 2>&1 &
+[1] 27687
+
+
+
+# Transfer updated files
+scp -i C:\k8s_key.pem \
+  "D:\Kubernetes & Cloud Cost Copilot\grafana-dashboards\k8s-ec2-cluster-monitor.json" \
+  ubuntu@35.173.177.252:~/k8s-cost-copilot/grafana-dashboards/
+
+# On EC2 — delete the old duplicate datasource
+curl -X DELETE "http://admin:admin@35.173.177.252:3000/api/datasources/uid/bfqdd8vm09fr4a"
+
+# Recreate ConfigMap + restart Grafana to pick up updated dashboard
+kubectl create configmap grafana-dashboard-k8s-cluster \
+  --from-file=k8s-ec2-cluster-monitor.json=grafana-dashboards/k8s-ec2-cluster-monitor.json \
+  -n mcp-test --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl rollout restart deployment/grafana-deployment -n mcp-test

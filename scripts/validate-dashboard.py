@@ -95,10 +95,17 @@ def kubectl_json(cmd: str) -> Any:
 
 
 
-# ── Pure-Python kubectl queries (no shell, no pipes) ───────────────────────────
+# ── Pure-Python kubectl queries (single API call, cached) ──────────────────
+
+def _pods_json():
+    """Return cached kubectl get pods --all-namespaces -o json."""
+    if _pods_json._cache is None:
+        _pods_json._cache = kubectl_json("get pods --all-namespaces")
+    return _pods_json._cache
+_pods_json._cache = None
+
 
 def k8s_count(cmd: str) -> int:
-    """Return count of lines from a kubectl get command."""
     raw = kubectl(f"{cmd} --no-headers")
     if raw.startswith("ERROR") or not raw:
         return 0
@@ -106,10 +113,6 @@ def k8s_count(cmd: str) -> int:
 
 
 def k8s_sum_json(cmd: str, jsonpath: str) -> int:
-    """Sum numeric values from a kubectl -o json result using a path expression.
-
-    jsonpath is a dotted path like 'status.readyReplicas'.
-    """
     data = kubectl_json(cmd)
     if isinstance(data, dict) and "items" in data:
         total = 0
@@ -128,8 +131,7 @@ def k8s_sum_json(cmd: str, jsonpath: str) -> int:
 
 
 def k8s_total_restarts() -> int:
-    """Sum restart counts across all pods in all namespaces."""
-    data = kubectl_json("get pods --all-namespaces")
+    data = _pods_json()
     if not isinstance(data, dict) or "items" not in data:
         return 0
     total = 0
@@ -139,9 +141,8 @@ def k8s_total_restarts() -> int:
     return total
 
 
-def k8s_top_restarts(n: int = 5) -> list[tuple[str, str, int]]:
-    """Return top N pods by restart count: [(namespace, name, restarts), ...]."""
-    data = kubectl_json("get pods --all-namespaces")
+def k8s_top_restarts(n: int = 5) -> list:
+    data = _pods_json()
     if not isinstance(data, dict) or "items" not in data:
         return []
     pods = []
@@ -158,8 +159,7 @@ def k8s_top_restarts(n: int = 5) -> list[tuple[str, str, int]]:
 
 
 def k8s_non_running_pod_count() -> int:
-    """Count pods not in Running or Succeeded phase."""
-    data = kubectl_json("get pods --all-namespaces")
+    data = _pods_json()
     if not isinstance(data, dict) or "items" not in data:
         return 0
     count = 0
@@ -171,8 +171,7 @@ def k8s_non_running_pod_count() -> int:
 
 
 def k8s_running_pod_count() -> int:
-    """Count pods in Running phase."""
-    data = kubectl_json("get pods --all-namespaces")
+    data = _pods_json()
     if not isinstance(data, dict) or "items" not in data:
         return 0
     count = 0

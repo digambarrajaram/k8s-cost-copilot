@@ -43,11 +43,6 @@ AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
 BEDROCK_MODEL_ID = os.environ.get("BEDROCK_MODEL_ID", "amazon.nova-pro-v1:0")
 MAX_GRAPH_STEPS = int(os.environ.get("MAX_GRAPH_STEPS", "25"))
 
-# Destructive keywords for belt-and-suspenders safety checks.
-_DESTRUCTIVE_KW = frozenset(
-    {"resources_delete", "pods_delete", "delete", "remove", "purge", "destroy"}
-)
-
 # Register RiskLevel for LangGraph checkpoint serialisation (pause/resume).
 ALLOWED_MSGPACK = JsonPlusSerializer(
     allowed_msgpack_modules=[("risk_classifier", "RiskLevel")],
@@ -130,11 +125,6 @@ async def build_and_run_graph() -> None:
 
             diagnosis_llm = _make_llm(temperature=0.1).bind_tools(ro_tools)
             executor_llm = _make_llm(temperature=0).bind_tools(rw_tools)
-
-            # ── Node: supervisor ───────────────────────────────────────────
-            # Pass-through placeholder.  Add multi-agent routing here later.
-            def supervisor_node(state: State) -> dict:
-                return {}
 
             # ── Node: k8s_diagnosis_agent ──────────────────────────────────
             # Read-only ReAct agent.  Loops via tools_condition until it stops
@@ -252,14 +242,12 @@ async def build_and_run_graph() -> None:
 
             # ── Graph assembly ─────────────────────────────────────────────
             builder = StateGraph(State)
-            builder.add_node("supervisor", supervisor_node)
             builder.add_node("k8s_diagnosis_agent", k8s_diagnosis_agent)
             builder.add_node("tools", ToolNode(ro_tools, handle_tool_errors=True))
             builder.add_node("risk_assessment", risk_assessment_node)
             builder.add_node("execute_action", execute_action_node)
 
-            builder.add_edge(START, "supervisor")
-            builder.add_edge("supervisor", "k8s_diagnosis_agent")
+            builder.add_edge(START, "k8s_diagnosis_agent")
 
             # ReAct loop: tool calls → back to agent; no tool calls → assess risk.
             builder.add_conditional_edges(
@@ -426,9 +414,9 @@ async def _handle_approval(
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
+# ponytail: global keywords check, per-tool permission if granularity needed
 def _is_destructive(text: str) -> bool:
-    lower = text.lower()
-    return any(kw in lower for kw in _DESTRUCTIVE_KW)
+    return any(kw in text.lower() for kw in ("delete", "remove", "purge", "destroy"))
 
 
 def _extract_recommended_action(findings: str) -> str:

@@ -1048,7 +1048,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(namespace) (rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\"}[2m]))",
+          "expr": "sum by(id) (rate(container_cpu_usage_seconds_total[2m]))",
           "legendFormat": "{{namespace}}",
           "refId": "A"
         }
@@ -1098,7 +1098,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(namespace) (container_memory_working_set_bytes{namespace=~\"$namespace\"})",
+          "expr": "sum by(id) (container_memory_working_set_bytes)",
           "legendFormat": "{{namespace}}",
           "refId": "A"
         }
@@ -1254,8 +1254,8 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "topk(10, container_memory_working_set_bytes{namespace=~\"$namespace\", pod=~\"$pod\"})",
-          "legendFormat": "{{namespace}}/{{pod}}/{{container}}",
+          "expr": "topk(10, container_memory_working_set_bytes)",
+          "legendFormat": "{{id}}",
           "refId": "A"
         }
       ]
@@ -1312,12 +1312,12 @@
           "sort": "desc"
         }
       },
-      "title": "Network Receive by Namespace",
+      "title": "Network Receive (cluster total)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(namespace) (rate(container_network_receive_bytes_total{namespace=~\"$namespace\"}[2m]))",
-          "legendFormat": "{{namespace}}",
+          "expr": "sum(rate(container_network_receive_bytes_total[2m]))",
+          "legendFormat": "Total RX",
           "refId": "A"
         }
       ]
@@ -1362,12 +1362,12 @@
           "sort": "desc"
         }
       },
-      "title": "Network Transmit by Namespace",
+      "title": "Network Transmit (cluster total)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(namespace) (rate(container_network_transmit_bytes_total{namespace=~\"$namespace\"}[2m]))",
-          "legendFormat": "{{namespace}}",
+          "expr": "sum(rate(container_network_transmit_bytes_total[2m]))",
+          "legendFormat": "Total TX",
           "refId": "A"
         }
       ]
@@ -1411,17 +1411,17 @@
           "mode": "multi"
         }
       },
-      "title": "Network Errors & Drops (Receive)",
+      "title": "Network Errors & Drops (cluster total)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(namespace) (rate(container_network_receive_errors_total{namespace=~\"$namespace\"}[2m]))",
-          "legendFormat": "Errors \u2014 {{namespace}}",
+          "expr": "sum(rate(container_network_receive_errors_total[2m]))",
+          "legendFormat": "Errors",
           "refId": "A"
         },
         {
-          "expr": "sum by(namespace) (rate(container_network_receive_packets_dropped_total{namespace=~\"$namespace\"}[2m]))",
-          "legendFormat": "Drops \u2014 {{namespace}}",
+          "expr": "sum(rate(container_network_receive_packets_dropped_total[2m]))",
+          "legendFormat": "Drops",
           "refId": "B"
         }
       ]
@@ -1469,12 +1469,12 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(container_network_receive_bytes_total{namespace=~\"$namespace\"}[2m]))",
+          "expr": "sum(rate(container_network_receive_bytes_total[2m]))",
           "legendFormat": "Total RX",
           "refId": "A"
         },
         {
-          "expr": "sum(rate(container_network_transmit_bytes_total{namespace=~\"$namespace\"}[2m]))",
+          "expr": "sum(rate(container_network_transmit_bytes_total[2m]))",
           "legendFormat": "Total TX",
           "refId": "B"
         }
@@ -1898,7 +1898,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "rate(container_oom_events_total{namespace=~\"$namespace\", pod=~\"$pod\"}[5m])",
+          "expr": "rate(container_oom_events_total[5m])",
           "legendFormat": "{{namespace}}/{{pod}}",
           "refId": "A"
         }
@@ -1939,12 +1939,12 @@
           "mode": "multi"
         }
       },
-      "title": "Kubelet Operations Rate (by node)",
+      "title": "Kubelet Operations Rate (by instance)",
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum by(node) (rate(kubelet_runtime_operations_total{node=~\"$node\"}[5m]))",
-          "legendFormat": "{{node}}",
+          "expr": "sum by(instance) (rate(kubelet_runtime_operations_total[5m]))",
+          "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ]
